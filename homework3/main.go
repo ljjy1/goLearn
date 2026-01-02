@@ -19,7 +19,7 @@ func main() {
 	// TestSelect(db)
 
 	//新增文章数据
-	// TestCreateHook(db)
+	TestCreateHook(db)
 
 	//删除评论
 	TestDeleteHook(db)
