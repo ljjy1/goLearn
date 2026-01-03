@@ -1,0 +1,497 @@
+basePath: /api/v1
+definitions:
+  response.Response:
+    properties:
+      code:
+        example: 200
+        type: integer
+      data: {}
+      message:
+        example: success
+        type: string
+    type: object
+  service.CommentResponse:
+    properties:
+      content:
+        description: 评论内容
+        example: 很棒的文章!
+        type: string
+      createdAt:
+        description: 创建时间
+        example: "2024-01-01 12:00:00"
+        type: string
+      id:
+        description: 评论ID
+        example: 1
+        type: integer
+      postId:
+        description: 文章ID
+        example: 1
+        type: integer
+      userId:
+        description: 用户ID
+        example: 1
+        type: integer
+    type: object
+  service.CreateCommentRequest:
+    properties:
+      content:
+        description: 评论内容
+        example: 很棒的文章!
+        maxLength: 200
+        minLength: 1
+        type: string
+      postId:
+        description: 文章ID
+        example: 1
+        type: integer
+    required:
+    - content
+    - postId
+    type: object
+  service.CreatePostRequest:
+    properties:
+      content:
+        description: 内容
+        example: 这是文章内容...
+        maxLength: 200
+        minLength: 1
+        type: string
+      title:
+        description: 标题
+        example: 我的第一篇文章
+        maxLength: 20
+        minLength: 1
+        type: string
+    required:
+    - content
+    - title
+    type: object
+  service.DeletePostRequest:
+    properties:
+      postId:
+        description: 文章ID
+        example: 1
+        type: integer
+    required:
+    - postId
+    type: object
+  service.LoginRequest:
+    properties:
+      password:
+        description: 密码 必传
+        example: "123456"
+        type: string
+      username:
+        description: 用户名 必传
+        example: testuser
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  service.LoginResponse:
+    properties:
+      nickname:
+        description: 昵称
+        example: 测试用户
+        type: string
+      token:
+        description: JWT 令牌
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        type: string
+      user_id:
+        description: 用户ID
+        example: 1
+        type: integer
+      username:
+        description: 用户名
+        example: testuser
+        type: string
+    type: object
+  service.PostResponse:
+    properties:
+      content:
+        description: 内容
+        example: 这是文章内容...
+        type: string
+      createdAt:
+        description: 创建时间
+        example: "2024-01-01 12:00:00"
+        type: string
+      id:
+        description: 文章ID
+        example: 1
+        type: integer
+      title:
+        description: 标题
+        example: 我的第一篇文章
+        type: string
+      updatedAt:
+        description: 更新时间
+        example: "2024-01-01 12:00:00"
+        type: string
+      userId:
+        description: 用户ID
+        example: 1
+        type: integer
+    type: object
+  service.RegisterRequest:
+    properties:
+      email:
+        description: 邮箱，可选，格式校验
+        example: test@example.com
+        type: string
+      nickname:
+        description: 昵称 必传，1-64个字符
+        example: 测试用户
+        maxLength: 64
+        minLength: 1
+        type: string
+      password:
+        description: 密码 必传，至少6个字符
+        example: "123456"
+        minLength: 6
+        type: string
+      username:
+        description: 用户名 必传，3-20个字符
+        example: testuser
+        maxLength: 20
+        minLength: 3
+        type: string
+    required:
+    - nickname
+    - password
+    - username
+    type: object
+  service.UpdatePostRequest:
+    properties:
+      content:
+        description: 内容
+        example: 更新后的内容...
+        maxLength: 200
+        minLength: 1
+        type: string
+      postId:
+        description: 文章ID
+        example: 1
+        type: integer
+      title:
+        description: 标题
+        example: 更新后的标题
+        maxLength: 20
+        minLength: 1
+        type: string
+    required:
+    - postId
+    type: object
+host: ${HOST}:${PORT}
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: 这是一个博客API系统,包含用户注册登录、文章管理、评论管理等功能
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Blog API
+  version: "1.0"
+paths:
+  /comment/create:
+    post:
+      consumes:
+      - application/json
+      description: 为文章创建评论,需要登录
+      parameters:
+      - description: 评论信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/service.CreateCommentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/service.CommentResponse'
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: 创建评论
+      tags:
+      - 评论管理
+  /comment/list:
+    get:
+      consumes:
+      - application/json
+      description: 分页获取文章评论列表,不需要登录
+      parameters:
+      - description: 文章ID
+        in: query
+        name: postId
+        required: true
+        type: integer
+      - default: 1
+        description: 页码
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: 每页数量
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 获取评论列表
+      tags:
+      - 评论管理
+  /post/create:
+    post:
+      consumes:
+      - application/json
+      description: 创建新文章,需要登录
+      parameters:
+      - description: 文章信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/service.CreatePostRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/service.PostResponse'
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: 创建文章
+      tags:
+      - 文章管理
+  /post/delete:
+    delete:
+      consumes:
+      - application/json
+      description: 删除文章,需要登录
+      parameters:
+      - description: 文章ID
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/service.DeletePostRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: 删除文章
+      tags:
+      - 文章管理
+  /post/list:
+    get:
+      consumes:
+      - application/json
+      description: 分页获取文章列表,不需要登录
+      parameters:
+      - default: 1
+        description: 页码
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: 每页数量
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 获取文章列表
+      tags:
+      - 文章管理
+  /post/update:
+    put:
+      consumes:
+      - application/json
+      description: 更新文章信息,需要登录
+      parameters:
+      - description: 文章信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/service.UpdatePostRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/service.PostResponse'
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: 更新文章
+      tags:
+      - 文章管理
+  /user/login:
+    post:
+      consumes:
+      - application/json
+      description: 用户登录获取JWT token
+      parameters:
+      - description: 登录信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/service.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 登录成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/service.LoginResponse'
+              type: object
+        "400":
+          description: 参数错误或登录失败
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 用户登录
+      tags:
+      - 用户管理
+  /user/register:
+    post:
+      consumes:
+      - application/json
+      description: 创建新用户账号
+      parameters:
+      - description: 注册信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/service.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 注册成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 用户注册
+      tags:
+      - 用户管理
+securityDefinitions:
+  Bearer:
+    description: 请输入JWT token,格式为Bearer {token}
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

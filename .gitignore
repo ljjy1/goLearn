@@ -1,0 +1,29 @@
+# 忽略日志文件夹
+homework4/cmd/logs/
+
+# Go 编译产物
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Go 工作区文件
+go.work
+
+# IDE 配置文件
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 环境变量文件
+.env
+.env.local
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
