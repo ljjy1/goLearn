@@ -185,7 +185,7 @@ definitions:
     required:
     - postId
     type: object
-host: ${HOST}:${PORT}
+host: 127.0.0.1:9527
 info:
   contact:
     email: support@swagger.io

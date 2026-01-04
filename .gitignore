@@ -1,6 +1,6 @@
 # 忽略日志文件夹
 homework4/cmd/logs/
-
+homework4/logs/
 # Go 编译产物
 *.exe
 *.exe~

@@ -9,6 +9,7 @@ import (
 	"homework4/internal/middleware/logger"
 	"homework4/internal/middleware/response"
 
+
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -145,6 +146,8 @@ func InitRoutes() *gin.Engine {
 	// 注册路由
 	r := gin.Default()
 
+	//初始化gin路径
+
 	// 使用中间件
 	r.Use(logger.LoggerMiddleware())
 	r.Use(response.ErrorHandlerMiddleware())
@@ -165,19 +168,29 @@ func InitRoutes() *gin.Engine {
 			userGroup.POST("/login", LoginHandler)
 		}
 
-		// 文章路由
+		// 文章路由需要登录的
+		articleGroupNeedLogin := api.Group("/post")
+		articleGroupNeedLogin.Use(auth.AuthMiddleware())
+		{
+			articleGroupNeedLogin.POST("/create", CreatePostHandler)
+			articleGroupNeedLogin.PUT("/update", UpdatePostHandler)
+			articleGroupNeedLogin.DELETE("/delete", DeletePostHandler)
+		}
+		// 文章路由不需要登录的
 		articleGroup := api.Group("/post")
 		{
-			articleGroup.POST("/create", CreatePostHandler).Use(auth.AuthMiddleware())
-			articleGroup.PUT("/update", UpdatePostHandler).Use(auth.AuthMiddleware())
-			articleGroup.DELETE("/delete", DeletePostHandler).Use(auth.AuthMiddleware())
 			articleGroup.GET("/list", GetPostListHandler)
 		}
 
-		// 评论路由
+		// 评论路由需要登录的
+		commentGroupNeedLogin := api.Group("/comment")
+		commentGroupNeedLogin.Use(auth.AuthMiddleware())
+		{
+			commentGroupNeedLogin.POST("/create", CreateCommentHandler)
+		}
+		// 评论路由不需要登录的
 		commentGroup := api.Group("/comment")
 		{
-			commentGroup.POST("/create", CreateCommentHandler).Use(auth.AuthMiddleware())
 			commentGroup.GET("/list", GetCommentListHandler)
 		}
 

@@ -54,13 +54,12 @@ go mod tidy
 ## 生成swagger文档
 ```shell
 go install github.com/swaggo/swag/cmd/swag@latest
-cd cmd
-swag init -g main.go
+swag init -g cmd\main.go
 ```
 
 ## 启动程序
 ```shell
-go run main.go 
+go run cmd\main.go 
 ```
 
 ## 访问Swagger文档

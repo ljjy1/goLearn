@@ -6,11 +6,12 @@ import (
 	"homework4/config"
 	"homework4/internal/app/redis"
 	"homework4/internal/utils/jwt"
-	
+
+	"homework4/internal/middleware/response"
 	"strings"
 	"time"
+
 	"github.com/gin-gonic/gin"
-	"homework4/internal/middleware/response"
 )
 
 const (
@@ -32,14 +33,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		parts := strings.SplitN(authHeader, " ", 2)
-		if len(parts) != 2 || parts[0] != "Bearer" {
-			c.Error(response.NewUnauthorizedError("认证令牌格式错误"))
-			c.Abort()
-			return
-		}
-
-		tokenString := parts[1]
+		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 
 		claims, err := jwt.ParseToken(tokenString, config.Cfg.JWT.Secret)
 		if err != nil {

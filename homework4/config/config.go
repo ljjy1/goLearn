@@ -5,6 +5,8 @@ package config
  */
 import (
 	"homework4/pkg/logger"
+	"path/filepath"
+	"runtime"
 
 	"github.com/spf13/viper"
 )
@@ -44,10 +46,9 @@ var Cfg *Config
 
 // 加载配置文件
 func LoadConfig() {
-	viper.SetConfigName("config")
-	viper.SetConfigType("yaml")
-
-	viper.AddConfigPath("../config")
+	_, filename, _, _ := runtime.Caller(0)
+	configPath := filepath.Join(filepath.Dir(filename), "config.yaml")
+	viper.SetConfigFile(configPath)
 
 	if err := viper.ReadInConfig(); err != nil {
 		logger.AppLog.Fatal("加载配置文件失败", logger.WrapMeta(err)...)

@@ -26,7 +26,7 @@ import (
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host ${HOST}:${PORT}
+// @host 127.0.0.1:9527
 // @BasePath /api/v1
 // @securityDefinitions.apikey Bearer
 // @in header
@@ -35,9 +35,9 @@ import (
 func main() {
 	// 初始化日志
 	logger.InitAppLog(
-		// logger.WithDisableConsole(),  //禁用控制台日志
+		// logger.WithDisableConsole(),
 		logger.WithTimeLayout(time.DateTime),
-		logger.WithFileP(common.LogFile),
+		logger.WithFileP(common.GetLogFile()),
 	)
 	//初始化配置
 	config.LoadConfig()
