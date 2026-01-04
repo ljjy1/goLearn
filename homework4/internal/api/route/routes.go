@@ -8,7 +8,9 @@ import (
 	"homework4/internal/middleware/auth"
 	"homework4/internal/middleware/logger"
 	"homework4/internal/middleware/response"
+	"time"
 
+	"github.com/gin-contrib/cors"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -146,8 +148,18 @@ func InitRoutes() *gin.Engine {
 	// 注册路由
 	r := gin.Default()
 
-	//初始化gin路径
+	//配置跨域
+	r.Use(cors.New(cors.Config{
+		// 当前设置允许全部
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}, // 允许的请求方法
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"}, // 允许的请求头
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,           // 允许携带 Cookie
+		MaxAge:           12 * time.Hour, // 预检请求缓存时间
+	}))
 
+	//初始化gin路径
 	// 使用中间件
 	r.Use(logger.LoggerMiddleware())
 	r.Use(response.ErrorHandlerMiddleware())

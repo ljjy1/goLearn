@@ -2,10 +2,9 @@ package service
 
 import (
 	"errors"
-	"homework4/config"
 	"homework4/internal/app/mysql"
+	"homework4/internal/middleware/auth"
 	"homework4/internal/models"
-	"homework4/internal/utils/jwt"
 
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -94,10 +93,7 @@ func (s *UserService) Login(req *LoginRequest) (*LoginResponse, error) {
 	}
 
 	//生成token
-	token, err := jwt.GenerateToken(user.ID, user.Username, user.Nickname, config.Cfg.JWT.Secret, config.Cfg.JWT.Expires)
-	if err != nil {
-		return nil, err
-	}
+	token := auth.GenerateToken(user.ID, user.Username, user.Nickname)
 
 	//返回token信息和用户信息
 	return &LoginResponse{
